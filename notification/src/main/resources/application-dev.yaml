@@ -1,6 +1,9 @@
 spring:
   application:
     name: notification
+  threads:
+    virtual:
+      enabled: true
   # Database Configuration
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}
@@ -42,10 +45,22 @@ spring:
     connection-timeout: 5s
   cloud:
     function:
-      definition: >
+      definition: processEmail;emailConsumer;emailPipeline
     stream:
       default:
         content-type: application/json
+      bindings:
+        emailConsumer-in-0:
+          destination: email.notifications.queue
+          group: email-worker-group
+          contentType: application/json
+        processEmail-in-0:
+          destination: email.requests.queue
+          group: email-processor-group
+          contentType: application/json
+        processEmail-out-0:
+          destination: email.status.queue
+          contentType: application/json
   mail:
     host: smtp.gmail.com
     port: 587
