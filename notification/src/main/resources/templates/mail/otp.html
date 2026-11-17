@@ -1,316 +1,70 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="x-apple-disable-message-reformatting">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-    <title th:text="${subject}">Your Verification Code</title>
-    <!--[if mso]>
-    <noscript>
-        <xml>
-            <o:OfficeDocumentSettings>
-                <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-        </xml>
-    </noscript>
-    <![endif]-->
-    <style th:inline="css">
-        /* Reset & Base Styles */
-        *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; line-height: 1.6; color: #1a1a2e; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
-        a { color: #2563eb; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-
-        /* Container */
-        .email-wrapper { width: 100%; min-width: 100%; background-color: #f4f4f7; padding: 40px 20px; }
-        .email-container { max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
-
-        /* Header */
-        .email-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 40px; text-align: center; }
-        .logo { max-width: 140px; height: auto; }
-        .security-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); color: #ffffff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; margin-top: 16px; letter-spacing: 0.5px; }
-
-        /* Body */
-        .email-body { padding: 40px; text-align: center; }
-        .otp-heading { font-size: 20px; font-weight: 600; color: #1a1a2e; margin: 0 0 8px; }
-        .otp-subtext { font-size: 15px; color: #64748b; margin: 0 0 32px; line-height: 1.6; }
-
-        /* OTP Code Display */
-        .otp-container { margin: 32px 0; text-align: center; }
-        .otp-code {
-            display: inline-block;
-            font-family: 'SF Mono', 'Fira Code', 'Monospace', monospace;
-            font-size: 36px;
-            font-weight: 700;
-            letter-spacing: 8px;
-            color: #0f172a;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            padding: 24px 40px;
-            border-radius: 12px;
-            border: 2px dashed #94a3b8;
-            user-select: all;
-            -webkit-user-select: all;
-            -moz-user-select: all;
-            -ms-user-select: all;
-            min-width: 280px;
-            text-align: center;
-            word-break: break-all;
-        }
-        .otp-code:focus { outline: 3px solid #2563eb; outline-offset: 3px; }
-
-        /* Copy Button - positioned below OTP */
-        .copy-button {
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none; /* Hidden by default, shown via JS */
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            margin-top: 16px;
-            width: 100%;
-            max-width: 280px;
-        }
-        .copy-button:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
-        .copy-button:active { transform: scale(0.98); }
-        .copy-button:focus { outline: 3px solid #2563eb; outline-offset: 2px; }
-        .copy-button.copied { background: #059669; }
-        .copy-button.copied:hover { background: #047857; }
-        .copy-icon { width: 16px; height: 16px; display: block; }
-        .copy-icon.copied { display: none; }
-        .copy-button.copied .copy-icon.default { display: none; }
-        .copy-button.copied .copy-icon.copied { display: block; }
-        .copy-text.default { display: inline; }
-        .copy-text.copied { display: none; }
-        .copy-button.copied .copy-text.default { display: none; }
-        .copy-button.copied .copy-text.copied { display: inline; }
-
-        /* Expiry Info */
-        .expiry-info { display: inline-flex; align-items: center; gap: 8px; color: #64748b; font-size: 13px; margin-top: 16px; padding: 12px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .expiry-icon { width: 18px; height: 18px; color: #f59e0b; flex-shrink: 0; }
-
-        /* Security Notice */
-        .security-notice { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 20px; margin: 32px 0; text-align: left; }
-        .security-notice-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #92400e; margin: 0 0 8px; }
-        .security-notice-icon { width: 18px; height: 18px; flex-shrink: 0; }
-        .security-notice-text { font-size: 13px; color: #78350f; margin: 0; line-height: 1.6; }
-
-        /* Footer */
-        .email-footer { background-color: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0; text-align: center; }
-        .footer-text { font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.6; }
-
-        /* Responsive */
-        @media screen and (max-width: 480px) {
-            .email-wrapper { padding: 20px 12px; }
-            .email-header, .email-body, .email-footer { padding: 24px 20px !important; }
-            .otp-code { font-size: 28px; letter-spacing: 4px; padding: 20px 24px; min-width: auto; width: 100%; }
-            .copy-button { margin-top: 12px; width: 100%; max-width: 100%; }
-            .security-notice { padding: 16px; }
-        }
-
-        /* High contrast mode */
-        @media (prefers-contrast: high) {
-            .otp-code { border: 3px solid #000; background: #fff; }
-            .copy-button { border: 2px solid #000; }
-            .security-notice { border: 2px solid #000; }
-        }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            .copy-button, .otp-code { transition: none; }
-        }
-    </style>
+    <meta content="telephone=no, date=no, address=no, email=no" name="format-detection">
+    <title th:text="${subject}">Your verification code</title>
 </head>
-<body>
-    <div class="email-wrapper" role="article" aria-roledescription="email" aria-label="Verification code from [[${organizationName}]]">
-        <!--[if mso]>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td align="center">
-                <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" style="width:480px;">
-        <![endif]-->
-        <div class="email-container">
-            <!-- Header -->
-            <header class="email-header" role="banner">
-                <img th:if="${logoUrl}" th:src="${logoUrl}" alt="[[${organizationName}]] Logo" class="logo" width="140" height="auto">
-                <div class="security-badge" aria-label="Security verification">
-                    <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                    <span>Secure Verification</span>
-                </div>
-            </header>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a2e;">
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f4f4f7;" width="100%">
+    <tr>
+        <td align="center" style="padding:32px 16px;">
+            <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:480px;background-color:#ffffff;border-radius:8px;border:1px solid #e2e8f0;"
+                   width="480">
 
-            <!-- Body -->
-            <main class="email-body" role="main">
-                <h1 class="otp-heading">Your Verification Code</h1>
-                <p class="otp-subtext">
-                    Use the code below to complete your <span th:text="${purpose}">verification</span>.
-                    This code expires in <strong th:text="${expiryMinutes}">10</strong> minutes.
-                </p>
+                <!-- Header -->
+                <tr>
+                    <td align="center" style="padding:28px 32px 8px;">
+                        <span style="font-size:18px;font-weight:700;color:#0f172a;" th:text="${organizationName}">Organization</span>
+                    </td>
+                </tr>
 
-                <!-- OTP Code with Copy Button -->
-                <div class="otp-container" role="group" aria-label="One-time verification code">
-                    <code class="otp-code"
-                          th:text="${otpCode}"
-                          id="otpCode"
-                          tabindex="0"
-                          aria-label="Your 6-digit verification code"
-                          autocomplete="one-time-code"
-                          spellcheck="false">123456</code>
-                    <button type="button"
-                            class="copy-button"
-                            id="copyBtn"
-                            aria-label="Copy verification code to clipboard"
-                            data-otp-code=""
-                            th:attr="data-otp-code=${otpCode}"
-                            style="display: none;">
-                        <svg class="copy-icon default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <svg class="copy-icon copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/><path d="M15 4h5a2 2 0 0 1 2 2v5"/></svg>
-                        <span class="copy-text default">Copy</span>
-                        <span class="copy-text copied">Copied!</span>
-                    </button>
-                </div>
+                <!-- Body -->
+                <tr>
+                    <td align="center" style="padding:16px 32px 8px;">
+                        <h1 style="margin:0 0 12px;font-size:20px;font-weight:600;color:#1a1a2e;">Your verification
+                            code</h1>
+                        <p style="margin:0;font-size:15px;line-height:1.6;color:#475569;">
+                            Use the code below to continue. It expires in <strong>5 minutes</strong>.
+                        </p>
+                    </td>
+                </tr>
 
-                <!-- Expiry Info -->
-                <div class="expiry-info" role="status" aria-live="polite">
-                    <svg class="expiry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                    <span>Code expires in <strong th:text="${expiryMinutes}">10</strong> minutes</span>
-                </div>
+                <!-- OTP -->
+                <tr>
+                    <td align="center" style="padding:24px 32px;">
+                        <div style="display:inline-block;padding:16px 32px;background-color:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;
+                                    font-family:'SF Mono','Courier New',monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#0f172a;"
+                             th:text="${otpCode}">123456
+                        </div>
+                    </td>
+                </tr>
 
-                <!-- Security Notice -->
-                <div class="security-notice" role="alert">
-                    <div class="security-notice-title">
-                        <svg class="security-notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span>Security Notice</span>
-                    </div>
-                    <p class="security-notice-text">
-                        <strong>Never share this code with anyone.</strong> <span th:text="${organizationName}">Our Organization</span> will never ask for your verification code via phone, email, or any other channel. If someone requests this code, it's a scam.
-                    </p>
-                </div>
+                <!-- Security note -->
+                <tr>
+                    <td style="padding:0 32px 28px;">
+                        <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;text-align:center;">
+                            Never share this code with anyone. We will never ask you for it.
+                            If you didn't request it, you can safely ignore this email.
+                        </p>
+                    </td>
+                </tr>
 
-                <p style="font-size: 13px; color: #64748b; margin-top: 16px;">
-                    Didn't request this? <a th:href="${supportUrl}" style="color: #2563eb;">Contact support immediately</a>
-                </p>
-            </main>
-
-            <!-- Footer -->
-            <footer class="email-footer" role="contentinfo">
-                <p class="footer-text">
-                    This is an automated security email from <span th:text="${organizationName}">Our Organization</span>.<br>
-                    Please do not reply to this message.
-                </p>
-            </footer>
-        </div>
-        <!--[if mso]>
-                </table>
-            </td></tr>
-        </table>
-        <![endif]-->
-    </div>
-
-    <!-- Copy-to-clipboard Script (progressive enhancement) -->
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        (function() {
-            'use strict';
-
-            var copyBtn = document.getElementById('copyBtn');
-            var otpCodeEl = document.getElementById('otpCode');
-            var otpCode = copyBtn ? copyBtn.getAttribute('data-otp-code') : '';
-
-            if (!copyBtn || !otpCodeEl || !otpCode) {
-                return; // Graceful degradation - copy button hidden via CSS if JS fails
-            }
-
-            // Show copy button (hidden by default in CSS for non-JS clients)
-            copyBtn.style.display = 'inline-flex';
-
-            function copyToClipboard(text) {
-                if (navigator.clipboard && window.isSecureContext) {
-                    return navigator.clipboard.writeText(text);
-                }
-                // Fallback for older browsers / non-secure contexts
-                return new Promise(function(resolve, reject) {
-                    var textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    textarea.style.position = 'fixed';
-                    textarea.style.left = '-9999px';
-                    textarea.style.top = '0';
-                    textarea.setAttribute('readonly', '');
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    try {
-                        var successful = document.execCommand('copy');
-                        document.body.removeChild(textarea);
-                        successful ? resolve() : reject(new Error('execCommand failed'));
-                    } catch (err) {
-                        document.body.removeChild(textarea);
-                        reject(err);
-                    }
-                });
-            }
-
-            function showCopiedState() {
-                copyBtn.classList.add('copied');
-                copyBtn.setAttribute('aria-label', 'Code copied to clipboard');
-                copyBtn.disabled = true;
-
-                // Reset after 2 seconds
-                setTimeout(function() {
-                    copyBtn.classList.remove('copied');
-                    copyBtn.setAttribute('aria-label', 'Copy verification code to clipboard');
-                    copyBtn.disabled = false;
-                }, 2000);
-            }
-
-            copyBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                copyToClipboard(otpCode).then(showCopiedState).catch(function(err) {
-                    console.warn('Copy failed:', err);
-                    // Fallback: select the text for manual copy
-                    otpCodeEl.focus();
-                    otpCodeEl.select();
-                    if (window.getSelection) {
-                        window.getSelection().removeAllRanges();
-                        var range = document.createRange();
-                        range.selectNode(otpCodeEl);
-                        window.getSelection().addRange(range);
-                    }
-                });
-            });
-
-            // Keyboard support
-            copyBtn.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    copyBtn.click();
-                }
-            });
-
-            // Also allow clicking the code itself to copy (progressive enhancement)
-            otpCodeEl.addEventListener('click', function() {
-                copyToClipboard(otpCode).then(showCopiedState).catch(function() {});
-            });
-
-            otpCodeEl.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    copyToClipboard(otpCode).then(showCopiedState).catch(function() {});
-                }
-            });
-        })();
-        /*]]>*/
-    </script>
+                <!-- Footer -->
+                <tr>
+                    <td align="center"
+                        style="padding:20px 32px;background-color:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 8px 8px;">
+                        <p style="margin:0;font-size:12px;line-height:1.6;color:#94a3b8;">
+                            This is an automated message from <span th:text="${organizationName}">Organization</span>.
+                            Please do not reply.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

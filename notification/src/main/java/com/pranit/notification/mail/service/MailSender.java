@@ -5,5 +5,5 @@ import com.pranit.notification.mail.dto.EmailRequest;
 @FunctionalInterface
 public interface MailSender {
 
-    void send(EmailRequest request);
+    void send(EmailRequest request, String templateName);
 }

@@ -42,10 +42,6 @@ public record EmailRequest(
         @JsonProperty("subject")
         String subject,
 
-        @NotBlank(message = "templateName is required")
-        @JsonProperty("templateName")
-        String templateName,
-
         @JsonProperty("templateData")
         Map<String, Object> templateData,
 
@@ -72,7 +68,6 @@ public record EmailRequest(
                 .purpose(purpose)
                 .recipient(recipient)
                 .subject(subject)
-                .templateName(templateName)
                 .templateData(templateData)
                 .build();
     }

@@ -1,19 +1,19 @@
 package com.pranit.notification.mail.router.impl;
 
+import com.pranit.notification.mail.dto.EmailRequest;
 import com.pranit.notification.mail.event.EmailEvent;
 import com.pranit.notification.mail.exception.InvalidEmailEventException;
 import com.pranit.notification.mail.handler.EmailHandler;
 import com.pranit.notification.mail.model.EmailPurpose;
 import com.pranit.notification.mail.router.EmailRouter;
-import com.pranit.notification.mail.service.NotificationAuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Routes email events to their corresponding {@link EmailHandler} while enforcing lifecycle auditing.
@@ -22,43 +22,55 @@ import java.util.stream.Collectors;
 @Component
 public class EmailRouterImpl implements EmailRouter {
 
-    private final Map<EmailPurpose, EmailHandler<?>> handlers;
-    private final NotificationAuditService auditService;
+    private final Map<EmailPurpose, EmailHandler> handlers;
 
-    public EmailRouterImpl(List<EmailHandler<?>> handlers, NotificationAuditService auditService) {
-        this.handlers = handlers.stream()
-                .collect(Collectors.toUnmodifiableMap(EmailHandler::supports, Function.identity()));
-        this.auditService = auditService;
+    public EmailRouterImpl(final List<EmailHandler> handlerList) {
+        final Map<EmailPurpose, EmailHandler> map = new EnumMap<>(EmailPurpose.class);
+        for (final EmailHandler handler : handlerList) {
+            final EmailHandler previous = map.put(handler.supports(), handler);
+            if (previous != null) {
+                throw new IllegalStateException(
+                        "Duplicate EmailHandler for purpose %s: %s and %s".formatted(
+                                handler.supports(),
+                                previous.getClass().getSimpleName(),
+                                handler.getClass().getSimpleName()));
+            }
+        }
+        this.handlers = Collections.unmodifiableMap(map);
+        log.info("Registered email handlers: {}", this.handlers.keySet());
     }
 
-    @Async("emailExecutor")
     @Override
+    @Async("emailExecutor")
     public void send(final EmailEvent event, final EmailPurpose purpose) {
         if (event == null || event.getEventId() == null || event.getEventId().isBlank()) {
-            throw new IllegalArgumentException("Email event and its client-supplied eventId cannot be null or blank");
+            throw new IllegalArgumentException("Email event and its eventId cannot be null or blank");
         }
-        final String threadName = Thread.currentThread().getName();
-        this.auditService.recordStart(event, threadName);
-        final EmailHandler<?> handler = this.handlers.get(purpose);
+        if (purpose == null) {
+            throw new InvalidEmailEventException("Email purpose is required, eventId=" + event.getEventId());
+        }
+        if (!(event instanceof EmailRequest request)) {
+            throw new InvalidEmailEventException
+                    ("Unsupported event type %s, eventId: %s".formatted(
+                            event.getClass().getSimpleName(), event.getEventId()));
+        }
+        if (request.purpose() != purpose) {
+            throw new InvalidEmailEventException
+                    ("Purpose mismatch: argument: %s, request: %s, eventId: %s".formatted(
+                            purpose, request.purpose(), request.eventId()));
+        }
+        final EmailHandler handler = this.handlers.get(purpose);
         if (handler == null) {
-            final String errorMsg = "Unsupported email purpose: " + purpose;
-            this.auditService.recordFinishFailure(event.getEventId(), "UNSUPPORTED_PURPOSE", errorMsg);
-            throw new InvalidEmailEventException(errorMsg);
+            throw new InvalidEmailEventException
+                    ("Unsupported email purpose: %s, eventId=%s".formatted(purpose, request.eventId()));
         }
+        log.info("Routing email eventId: {} purpose: {} handler: {}",
+                request.eventId(), purpose, handler.getClass().getSimpleName());
         try {
-            sendEvent(handler, event);
-            this.auditService.recordFinishSuccess(event.getEventId(),
-                    String.format("Email dispatched successfully by handler [%s]", handler.getClass().getSimpleName()));
-        } catch (Exception ex) {
-            this.auditService.recordFinishFailure(event.getEventId(),
-                    ex.getClass().getSimpleName(), ex.getMessage(), "Email processing failed: " + ex.getMessage());
-            log.error("Failed to process email eventId [{}]: {}", event.getEventId(), ex.getMessage(), ex);
+            handler.send(request);
+        } catch (final RuntimeException ex) {
+            log.error("Failed to process email eventId: {}: {}", request.eventId(), ex.getMessage(), ex);
             throw ex;
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> void sendEvent(final EmailHandler<T> handler, final EmailEvent event) {
-        handler.send((T) event);
     }
 }

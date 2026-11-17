@@ -43,24 +43,40 @@ spring:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
     connection-timeout: 5s
-  cloud:
-    function:
-      definition: processEmail;emailConsumer;emailPipeline
-    stream:
-      default:
-        content-type: application/json
-      bindings:
-        emailConsumer-in-0:
-          destination: email.notifications.queue
-          group: email-worker-group
-          contentType: application/json
-        processEmail-in-0:
-          destination: email.requests.queue
-          group: email-processor-group
-          contentType: application/json
-        processEmail-out-0:
-          destination: email.status.queue
-          contentType: application/json
+    cloud:
+      function:
+        definition: processEmail
+      stream:
+        default:
+          content-type: application/json
+        bindings:
+          processEmail-in-0:
+            destination: email.notifications.queue
+            group: email-worker-group
+            content-type: application/json
+            consumer:
+              concurrency: 3
+              maxAttempts: 5
+              backOffInitialInterval: 2000
+              backOffMaxInterval: 30000
+              backOffMultiplier: 2.0
+              defaultRetryable: true               # everything not listed below is retried
+              retryableExceptions: # listed classes are NOT retried
+                com.pranit.notification.mail.exception.EmailValidationException: false
+                com.pranit.notification.mail.exception.EmailRenderException: false
+                com.pranit.notification.mail.exception.EmailPermanentDeliveryException: false
+                com.pranit.notification.mail.exception.InvalidEmailEventException: false
+        rabbit:
+          bindings:
+            processEmail-in-0:
+              consumer:
+                autoBindDlq: true
+                republishToDlq: true
+                requeueRejected: false
+                deadLetterQueueName: email.notifications.dlq
+                ttl: 300000                        # 5 min in the main queue, then dead-lettered
+                dlqTtl: 604800000                  # 7 days in the DLQ
+                dlqMaxLength: 10000
   mail:
     host: smtp.gmail.com
     port: 587
@@ -82,6 +98,10 @@ spring:
       mode: HTML
       encoding: UTF-8
       cache: false
+mail:
+  from:
+    address: no-reply@notify.com
+    name: Service Support
 # Logging Configuration
 logging:
   file:

@@ -3,6 +3,10 @@ package com.pranit.notification.mail.service.impl;
 import com.pranit.notification.mail.dto.EmailAttachment;
 import com.pranit.notification.mail.dto.EmailRequest;
 import com.pranit.notification.mail.dto.Recipient;
+import com.pranit.notification.mail.exception.EmailDeliveryException;
+import com.pranit.notification.mail.exception.EmailPermanentDeliveryException;
+import com.pranit.notification.mail.exception.EmailRenderException;
+import com.pranit.notification.mail.exception.EmailValidationException;
 import com.pranit.notification.mail.service.MailSender;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -10,12 +14,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateEngineException;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -27,46 +37,92 @@ public class MailSenderImpl implements MailSender {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
-    @Value("${mail.from}")
-    private String from;
+    @Value("${mail.from.address}")
+    private String fromAddress;
+
+    @Value("${mail.from.name}")
+    private String fromName;
 
     @Override
-    public void send(EmailRequest request) {
-        log.info("Sending email eventId={} template={}", request.eventId(), request.templateName());
-
-        // Failures surface as Spring MailException (MailSendException, MailAuthenticationException, ...)
-        javaMailSender.send(message -> populate(message, request));
-
-        log.info("Email accepted by SMTP server eventId={}", request.eventId());
+    public void send(final EmailRequest request, final String templateName) {
+        final String eventId = request.eventId();
+        log.info("Sending email eventId: {} purpose: {} template: {}", eventId, request.purpose(), templateName);
+        validate(request);
+        final String html = render(request, templateName);
+        final MimeMessage message = build(request, html);
+        deliver(request, message);
+        log.info("Email accepted by SMTP server eventId: {} to: {}", eventId, request.recipient().to());
     }
 
-    private void populate(MimeMessage message, EmailRequest request) throws MessagingException {
-        MimeMessageHelper helper = new MimeMessageHelper(
-                message, MimeMessageHelper.MULTIPART_MODE_MIXED, StandardCharsets.UTF_8.name());
-
-        Recipient recipient = request.recipient();
-
-        helper.setFrom(from);
-        helper.setTo(recipient.to());
-        if (!recipient.cc().isEmpty()) {
-            helper.setCc(recipient.cc().toArray(String[]::new));
+    private void validate(final EmailRequest request) {
+        for (EmailAttachment a : request.attachments()) {
+            if (a == null
+                    || a.filename() == null
+                    || a.filename().isBlank()
+                    || a.data() == null
+                    || a.data().length == 0) {
+                throw new EmailValidationException
+                        ("Attachment must have a filename and data", request.eventId());
+            }
         }
-        if (!recipient.bcc().isEmpty()) {
-            helper.setBcc(recipient.bcc().toArray(String[]::new));
+    }
+
+    private String render(final EmailRequest request, final String templateName) {
+        try {
+            final Context context = new Context(Locale.ENGLISH);
+            context.setVariables(request.templateData());
+            context.setVariable("subject", request.subject());
+            context.setVariable("recipientEmail", request.recipient().to());
+            return this.templateEngine.process(templateName, context);
+        } catch (TemplateEngineException e) {
+            throw new EmailRenderException
+                    ("Failed to render template '" + templateName + "'", request.eventId(), e);
         }
-        helper.setSubject(request.subject());
+    }
 
-        Context context = new Context(Locale.ENGLISH, request.templateData());
-        helper.setText(templateEngine.process(request.templateName(), context), true);
-
-        for (EmailAttachment attachment : request.attachments()) {
-            helper.addAttachment(
-                    attachment.filename(),
-                    new ByteArrayResource(attachment.data()),
-                    attachment.contentType());
+    private MimeMessage build(final EmailRequest request, final String html) {
+        try {
+            final Recipient recipient = request.recipient();
+            final MimeMessage message = this.javaMailSender.createMimeMessage();
+            final MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED,
+                    StandardCharsets.UTF_8.name()
+            );
+            helper.setFrom(this.fromAddress, this.fromName);
+            helper.setTo(recipient.to());
+            if (!recipient.cc().isEmpty()) {
+                helper.setCc(recipient.cc().toArray(String[]::new));
+            }
+            if (!recipient.bcc().isEmpty()) {
+                helper.setBcc(recipient.bcc().toArray(String[]::new));
+            }
+            helper.setSubject(request.subject());
+            helper.setText(html, true);
+            for (EmailAttachment a : request.attachments()) {
+                helper.addAttachment(
+                        a.filename(),
+                        new ByteArrayResource(a.data()),
+                        a.contentType()
+                );
+            }
+            message.setHeader("X-Event-Id", request.eventId());
+            return message;
+        } catch (final MessagingException | UnsupportedEncodingException e) {
+            throw new EmailValidationException
+                    ("Could not build email (check addresses/attachments)", request.eventId(), e);
         }
+    }
 
-        // Trace a delivered email back to its audit row
-        message.setHeader("X-Event-Id", request.eventId());
+    private void deliver(final EmailRequest request, final MimeMessage message) {
+        try {
+            this.javaMailSender.send(message);
+        } catch (final MailAuthenticationException | MailParseException | MailPreparationException e) {
+            log.error("SMTP rejected email eventId={} (non-retryable)", request.eventId(), e);
+            throw new EmailPermanentDeliveryException("SMTP rejected email", request.eventId(), e);
+        } catch (final MailException e) {
+            log.warn("SMTP send failed eventId={} (will retry)", request.eventId(), e);
+            throw new EmailDeliveryException("SMTP send failed", request.eventId(), true, e);
+        }
     }
 }

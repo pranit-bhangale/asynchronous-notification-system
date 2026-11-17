@@ -1,11 +1,12 @@
 package com.pranit.notification.mail.handler;
 
 
+import com.pranit.notification.mail.dto.EmailRequest;
 import com.pranit.notification.mail.model.EmailPurpose;
 
-public interface EmailHandler<T> {
+public interface EmailHandler {
 
     EmailPurpose supports();
 
-    void send(T event);
+    void send(EmailRequest request);
 }
