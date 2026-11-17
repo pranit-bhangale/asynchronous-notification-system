@@ -1,6 +1,6 @@
 package com.pranit.notification.mail.entity;
 
-import com.pranit.notification.mail.model.EmailProcessingStatus;
+import com.pranit.notification.mail.model.ProcessingStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -23,19 +22,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Audit entity mapping to the {@code notification_audits} database table.
- * Contains only persistence mapping fields for auditing with no business logic.
+ * Audit entity mapping to the {@code notification_audits} table.
+ * Schema, indexes and constraints are owned by Flyway.
  */
 @Entity
-@Table(
-        name = "notification_audits",
-        indexes = {
-                @Index(name = "idx_notification_audit_event_id", columnList = "event_id", unique = true),
-                @Index(name = "idx_notification_audit_status", columnList = "status"),
-                @Index(name = "idx_notification_audit_start", columnList = "started_at"),
-                @Index(name = "idx_notification_audit_send_to", columnList = "send_to")
-        }
-)
+@Table(name = "notification_audits")
 @Getter
 @Setter
 @Builder
@@ -48,7 +39,6 @@ public class NotificationAudit {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-
     @Column(name = "event_id", nullable = false, unique = true, length = 64)
     private String eventId;
 
@@ -60,7 +50,7 @@ public class NotificationAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
-    private EmailProcessingStatus status;
+    private ProcessingStatus status;
 
     @Column(name = "started_at")
     private Instant start;
@@ -68,8 +58,11 @@ public class NotificationAudit {
     @Column(name = "finished_at")
     private Instant finish;
 
-    @Column(name = "error_message")
+    @Column(name = "error_message", length = 2000)
     private String errorMessage;
+
+    @Column(name = "attempts")
+    private Integer attempts;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -80,6 +73,6 @@ public class NotificationAudit {
     private Instant updatedAt;
 
     @Version
-    @Column(name = "version")
+    @Column(name = "version", nullable = false)
     private Long version;
 }

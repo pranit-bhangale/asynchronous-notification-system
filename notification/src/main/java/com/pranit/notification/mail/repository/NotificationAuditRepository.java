@@ -1,7 +1,7 @@
 package com.pranit.notification.mail.repository;
 
 import com.pranit.notification.mail.entity.NotificationAudit;
-import com.pranit.notification.mail.model.EmailProcessingStatus;
+import com.pranit.notification.mail.model.ProcessingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +15,7 @@ public interface NotificationAuditRepository extends JpaRepository<NotificationA
 
     Optional<NotificationAudit> findByEventId(String eventId);
 
-    List<NotificationAudit> findByStatus(EmailProcessingStatus status);
+    List<NotificationAudit> findByStatus(ProcessingStatus status);
 
     List<NotificationAudit> findBySendTo(String sendTo);
 

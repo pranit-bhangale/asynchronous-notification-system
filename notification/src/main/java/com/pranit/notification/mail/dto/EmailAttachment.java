@@ -3,16 +3,18 @@ package com.pranit.notification.mail.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 import java.io.Serializable;
 
 /**
- * Metadata and payload representation for email attachments.
+ * File attached to an email. {@code data} is Base64 in JSON.
  */
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record EmailAttachment(
+
         @NotBlank(message = "Attachment filename is required")
         @JsonProperty("filename")
         String filename,
@@ -21,40 +23,8 @@ public record EmailAttachment(
         @JsonProperty("contentType")
         String contentType,
 
+        @NotEmpty(message = "Attachment data is required")
         @JsonProperty("data")
-        byte[] data,
-
-        @JsonProperty("downloadUrl")
-        String downloadUrl,
-
-        @JsonProperty("inline")
-        boolean inline,
-
-        @JsonProperty("contentId")
-        String contentId
+        byte[] data
 ) implements Serializable {
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public String getDownloadUrl() {
-        return downloadUrl;
-    }
-
-    public boolean isInline() {
-        return inline;
-    }
-
-    public String getContentId() {
-        return contentId;
-    }
 }
