@@ -1,0 +1,82 @@
+[
+  {
+    "eventId": "evt-welcome-batch-01",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user01@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 01", "username": "user01", "createdAt": "2024-01-15T10:30:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-02",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user02@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 02", "username": "user02", "createdAt": "2024-01-15T10:31:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-03",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user03@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 03", "username": "user03", "createdAt": "2024-01-15T10:32:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-04",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user04@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 04", "username": "user04", "createdAt": "2024-01-15T10:33:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-05",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user05@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 05", "username": "user05", "createdAt": "2024-01-15T10:34:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-06",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user06@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 06", "username": "user06", "createdAt": "2024-01-15T10:35:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-07",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user07@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 07", "username": "user07", "createdAt": "2024-01-15T10:36:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-08",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user08@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 08", "username": "user08", "createdAt": "2024-01-15T10:37:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-09",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user09@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 09", "username": "user09", "createdAt": "2024-01-15T10:38:00Z" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-batch-10",
+    "purpose": "WELCOME",
+    "recipient": { "to": "user10@example.com", "cc": [], "bcc": [] },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": { "organizationName": "Acme Corp", "organizationUrl": "https://acme.com", "fullName": "User 10", "username": "user10", "createdAt": "2024-01-15T10:39:00Z" },
+    "attachments": []
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "eventId": "evt-otp-batch-01",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user01@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "111111" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-02",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user02@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "222222" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-03",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user03@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "333333" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-04",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user04@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "444444" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-05",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user05@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "555555" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-06",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user06@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "666666" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-07",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user07@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "777777" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-08",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user08@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "888888" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-09",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user09@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "999999" },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-batch-10",
+    "purpose": "PASSWORD_RESET",
+    "recipient": { "to": "user10@example.com", "cc": [], "bcc": ["security@example.com"] },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": { "organizationName": "Acme Corp", "otpCode": "000000" },
+    "attachments": []
+  }
+]

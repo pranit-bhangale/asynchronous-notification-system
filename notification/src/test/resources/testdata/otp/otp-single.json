@@ -1,0 +1,15 @@
+{
+  "eventId": "evt-otp-001",
+  "purpose": "PASSWORD_RESET",
+  "recipient": {
+    "to": "john.doe@example.com",
+    "cc": [],
+    "bcc": ["security@example.com"]
+  },
+  "subject": "Your OTP Code for Password Reset",
+  "templateData": {
+    "organizationName": "Acme Corp",
+    "otpCode": "123456"
+  },
+  "attachments": []
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "eventId": "evt-welcome-001",
+    "purpose": "WELCOME",
+    "recipient": {
+      "to": "john.doe@example.com",
+      "cc": [],
+      "bcc": []
+    },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "organizationUrl": "https://acme.com",
+      "fullName": "John Doe",
+      "username": "johndoe",
+      "createdAt": "2024-01-15T10:30:00Z"
+    },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-002",
+    "purpose": "WELCOME",
+    "recipient": {
+      "to": "jane.smith@example.com",
+      "cc": ["hr@example.com"],
+      "bcc": []
+    },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "organizationUrl": "https://acme.com",
+      "fullName": "Jane Smith",
+      "username": "janesmith",
+      "createdAt": "2024-01-15T11:00:00Z"
+    },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-welcome-003",
+    "purpose": "WELCOME",
+    "recipient": {
+      "to": "bob.wilson@example.com",
+      "cc": [],
+      "bcc": ["compliance@example.com"]
+    },
+    "subject": "Welcome to Acme Corp!",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "organizationUrl": "https://acme.com",
+      "fullName": "Bob Wilson",
+      "username": "bobwilson",
+      "createdAt": "2024-01-15T11:30:00Z"
+    },
+    "attachments": []
+  }
+]

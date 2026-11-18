@@ -1,0 +1,47 @@
+[
+  {
+    "eventId": "evt-otp-001",
+    "purpose": "PASSWORD_RESET",
+    "recipient": {
+      "to": "john.doe@example.com",
+      "cc": [],
+      "bcc": ["security@example.com"]
+    },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "otpCode": "123456"
+    },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-002",
+    "purpose": "PASSWORD_RESET",
+    "recipient": {
+      "to": "jane.smith@example.com",
+      "cc": ["support@example.com"],
+      "bcc": []
+    },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "otpCode": "654321"
+    },
+    "attachments": []
+  },
+  {
+    "eventId": "evt-otp-003",
+    "purpose": "PASSWORD_RESET",
+    "recipient": {
+      "to": "bob.wilson@example.com",
+      "cc": [],
+      "bcc": []
+    },
+    "subject": "Your OTP Code for Password Reset",
+    "templateData": {
+      "organizationName": "Acme Corp",
+      "otpCode": "987654"
+    },
+    "attachments": []
+  }
+]

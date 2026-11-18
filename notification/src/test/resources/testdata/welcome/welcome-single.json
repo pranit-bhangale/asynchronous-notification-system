@@ -1,0 +1,18 @@
+{
+  "eventId": "evt-welcome-001",
+  "purpose": "WELCOME",
+  "recipient": {
+    "to": "john.doe@example.com",
+    "cc": ["manager@example.com"],
+    "bcc": ["audit@example.com"]
+  },
+  "subject": "Welcome to Acme Corp!",
+  "templateData": {
+    "organizationName": "Acme Corp",
+    "organizationUrl": "https://acme.com",
+    "fullName": "John Doe",
+    "username": "johndoe",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "attachments": []
+}

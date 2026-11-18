@@ -1,0 +1,120 @@
+spring:
+  application:
+    name: notification
+  threads:
+    virtual:
+      enabled: true
+  # Test Database Configuration (H2 in-memory)
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+  # Disable Flyway for tests
+  flyway:
+    enabled: false
+  # RabbitMQ Configuration (will be overridden by Testcontainers)
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    connection-timeout: 5s
+  cloud:
+    function:
+      definition: processEmail
+    stream:
+      default:
+        content-type: application/json
+      bindings:
+        processEmail-in-0:
+          destination: email.notifications.queue
+          group: email-worker-group
+          content-type: application/json
+          consumer:
+            concurrency: 1
+            maxAttempts: 1
+            defaultRetryable: false
+      rabbit:
+        bindings:
+          processEmail-in-0:
+            consumer:
+              autoBindDlq: true
+              republishToDlq: true
+              requeueRejected: false
+              deadLetterQueueName: email.notifications.dlq
+              ttl: 300000
+              dlqTtl: 604800000
+              dlqMaxLength: 10000
+  # Mail Configuration (use test SMTP or mock)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    thymeleaf:
+      prefix: classpath:/templates
+      suffix: .html
+      mode: HTML
+      encoding: UTF-8
+      cache: false
+mail:
+  from:
+    address: no-reply@notify.com
+    name: Service Support
+# Logging Configuration
+logging:
+  file:
+    name: ./logs/test.log
+  level:
+    root: INFO
+    com.pranit.notification: DEBUG
+    org.springframework.cloud.stream: DEBUG
+    org.springframework.amqp: DEBUG
+  logback:
+    rollingpolicy:
+      file-name-pattern: ./logs/test.%d{yyyy-MM-dd}.%i.log.gz
+      max-file-size: 10MB
+      total-size-cap: 100MB
+      max-history: 7
+      clean-history-on-start: true
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+info:
+  app:
+    name: notification-system
+    description: "Notification System Integration Test"
+    version: "1.0.0"

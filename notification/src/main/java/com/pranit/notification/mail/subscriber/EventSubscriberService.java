@@ -21,7 +21,7 @@ public class EventSubscriberService {
     private final Validator validator;
 
     @Bean
-    Consumer<EmailRequest> processEmail() {
+    public Consumer<EmailRequest> processEmail() {
         return request -> {
             if (request == null) {
                 log.warn("Received null email message, skipping");
